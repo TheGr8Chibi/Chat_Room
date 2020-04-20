@@ -21,7 +21,7 @@ public class Client {
 	public static void main(String[] args) {
 
 		// Port number for socket connection
-		final int port = 1000;
+		final int port = 5006;
 
 		try {
 			// Gets localhost IP
@@ -67,6 +67,7 @@ public class Client {
 			while (true) {
 				try {
 					// Read and print incoming data
+					System.out.println("READ");
 					String incoming = input.readUTF();
 					System.out.println(incoming);
 				} catch (IOException e) {

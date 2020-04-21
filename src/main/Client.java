@@ -67,7 +67,6 @@ public class Client {
 			while (true) {
 				try {
 					// Read and print incoming data
-					System.out.println("READ");
 					String incoming = input.readUTF();
 					System.out.println(incoming);
 				} catch (IOException e) {

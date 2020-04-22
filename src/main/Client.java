@@ -21,7 +21,7 @@ public class Client {
 	public static void main(String[] args) {
 
 		// Port number for socket connection
-		final int port = 5006;
+		final int port = 5000;
 
 		try {
 			// Gets localhost IP
@@ -70,7 +70,21 @@ public class Client {
 					String incoming = input.readUTF();
 					System.out.println(incoming);
 				} catch (IOException e) {
-					e.printStackTrace();
+					// e.printStackTrace();
+					//Closes thread, socket connection and window if connection to server is lost
+					System.out.println("SERVER CONNECTION LOST");
+					System.out.println("WINDOW CLOSING");
+					try {
+						sendMessage.interrupt();
+						socket.close();
+						input.close();
+						output.close();
+						Thread.sleep(1000);
+						System.exit(0);
+						break;
+					} catch (IOException | InterruptedException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}

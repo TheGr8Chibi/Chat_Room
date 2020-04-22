@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class Server {
 
+	//Thread for handling clients and accepting new connections
 	static Thread t;
 	static Thread connect;
 
@@ -16,7 +17,8 @@ public class Server {
 	static DataInputStream input;
 	static DataOutputStream output;
 
-	final static int port = 5006;
+	//Connection port number
+	final static int port = 5000;
 	
 	//Vector with clients
 	static Vector<client> clients = new Vector<>();
@@ -26,8 +28,10 @@ public class Server {
 	
 	public static void main(String[] args) throws IOException {
 
+		//Initiate server
 		server = new ServerSocket(port);
 
+		//Starting thread for accepting clients
 		connector c = new connector();
 		Thread srv = new Thread(c);
 		srv.start();
@@ -39,6 +43,7 @@ public class Server {
 		public void run() {
 			while (true) {
 				try {
+					//Connects new clients with the server
 					socket = server.accept();
 					System.out.println("Client " + clients.size() + " connected");
 					System.out.println();
@@ -46,10 +51,12 @@ public class Server {
 					input = new DataInputStream(socket.getInputStream());
 					output = new DataOutputStream(socket.getOutputStream());
 
+					//Initiate new handler for client and starts thread for client
 					client s = new client(socket, input, output, clients.size());
 					clients.add(s);
 					t = new Thread(s);
 					t.start();
+					//Add thread to arraylist
 					TS.add(t.getId());
 					
 				} catch (IOException e) {
@@ -102,10 +109,14 @@ public class Server {
 	}
 
 	public static void removeClient(Socket s, DataInputStream in, DataOutputStream out, int id) {
+		//Iterates through all threads
 		for (Thread t : Thread.getAllStackTraces().keySet()) {
+			//Checks if thread ID is same as ID for thread to be stopped
 			if (t.getId() == TS.get(id) && TS.size() != 0) {
+				//Stops thread and removes from arraylist
 				t.interrupt();
 				TS.remove(id);
+				//Close socket and data streams
 				try {
 					s.close();
 					in.close();
@@ -113,8 +124,10 @@ public class Server {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
+				//Remove client from clients vector
 				clients.remove(id);
 
+				//Decreases the ID value for all clients above the removed one with 1
 				for (client r : Server.clients) {
 					if (r.id > id && r.id != 0) {
 						r.id--;

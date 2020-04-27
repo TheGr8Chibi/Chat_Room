@@ -22,7 +22,10 @@ public class Client {
 
 		// Port number for socket connection
 		final int port = 5000;
-
+		
+		System.out.println("Insert username");
+		String username = scanner.next();
+		
 		try {
 			// Gets localhost IP
 			InetAddress IP = InetAddress.getByName("localhost");
@@ -34,6 +37,7 @@ public class Client {
 			// Initiate data streams
 			input = new DataInputStream(socket.getInputStream());
 			output = new DataOutputStream(socket.getOutputStream());
+			output.writeUTF(username);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -36,7 +36,6 @@ public class Server {
 		Thread srv = new Thread(c);
 		srv.start();
 		System.out.println("Server started");
-		System.out.println();
 	}
 
 	static public class connector implements Runnable {
@@ -45,14 +44,19 @@ public class Server {
 				try {
 					//Connects new clients with the server
 					socket = server.accept();
-					System.out.println("Client " + clients.size() + " connected");
-					System.out.println();
 					
 					input = new DataInputStream(socket.getInputStream());
 					output = new DataOutputStream(socket.getOutputStream());
+					
+					//Get username
+					String userN = input.readUTF();
 
+					System.out.println();
+					System.out.println("Client connected: " + userN);
+					System.out.println();
+					
 					//Initiate new handler for client and starts thread for client
-					client s = new client(socket, input, output, clients.size());
+					client s = new client(socket, input, output, clients.size(), userN);
 					clients.add(s);
 					t = new Thread(s);
 					t.start();
@@ -65,28 +69,31 @@ public class Server {
 			}
 		}
 	}
-
+	
 	static public class client implements Runnable {
 		DataInputStream in;
 		DataOutputStream out;
 		Socket s;
+		String un;
 		int id;
 
-		public client(Socket socket, DataInputStream inR, DataOutputStream outR, int idR) {
+		public client(Socket socket, DataInputStream inR, DataOutputStream outR, int idR, String userName) {
 			in = inR;
 			out = outR;
 			s = socket;
 			id = idR;
+			un = userName;
 		}
 
 		@Override
 		public void run() {
-
+			
 			while (true) {
 				try {
 					String inr = in.readUTF();
 					// Send message to all clients
-					inr = "Client " + id + ": " + inr;
+					if (!inr.isEmpty()) {
+					inr =  un + ": " + inr;
 					for (client r : Server.clients) {
 						if (r.id != id) {
 							try {
@@ -98,9 +105,10 @@ public class Server {
 						}
 					}
 					System.out.println(inr);
+					}
 				} catch (IOException e) {
 					// e.printStackTrace();
-					removeClient(s, in, out, id);
+					removeClient(s, in, out, id, un);
 					break;
 				}
 			}
@@ -108,7 +116,7 @@ public class Server {
 		}
 	}
 
-	public static void removeClient(Socket s, DataInputStream in, DataOutputStream out, int id) {
+	public static void removeClient(Socket s, DataInputStream in, DataOutputStream out, int id, String userName) {
 		//Iterates through all threads
 		for (Thread t : Thread.getAllStackTraces().keySet()) {
 			//Checks if thread ID is same as ID for thread to be stopped
@@ -134,7 +142,7 @@ public class Server {
 					}
 				}
 				System.out.println();
-				System.out.println("Client " + id + " disconnected");
+				System.out.println("Client " + userName + " disconnected");
 				System.out.println("Clients connected: " + clients.size());
 				System.out.println();
 				break;

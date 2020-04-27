@@ -22,17 +22,16 @@ public class Client {
 
 		// Port number for socket connection
 		final int port = 5000;
-		
+
 		System.out.println("Insert username");
 		String username = scanner.next();
-		
+
 		try {
 			// Gets localhost IP
 			InetAddress IP = InetAddress.getByName("localhost");
 
 			// Setting up connection to server
 			socket = new Socket(IP, port);
-			System.out.println("Connected to server at " + IP + " on port " + port);
 
 			// Initiate data streams
 			input = new DataInputStream(socket.getInputStream());
@@ -75,7 +74,7 @@ public class Client {
 					System.out.println(incoming);
 				} catch (IOException e) {
 					// e.printStackTrace();
-					//Closes thread, socket connection and window if connection to server is lost
+					// Closes thread, socket connection and window if connection to server is lost
 					System.out.println("SERVER CONNECTION LOST");
 					System.out.println("WINDOW CLOSING");
 					try {
